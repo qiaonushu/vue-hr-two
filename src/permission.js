@@ -1,7 +1,7 @@
-// import router from './router'
-// import store from './store'
+import router from './router'
+import store from './store'
 // import { Message } from 'element-ui'
-// import NProgress from 'nprogress' // progress bar
+import NProgress from 'nprogress' // progress bar
 // import 'nprogress/nprogress.css' // progress bar style
 // import { getToken } from '@/utils/auth' // get token from cookie
 // import getPageTitle from '@/utils/get-page-title'
@@ -13,7 +13,31 @@
 // router.beforeEach(async(to, from, next) => {
 //   // start progress bar
 //   NProgress.start()
+const arr = ['/login', '/404']
+router.beforeEach(async(to, from, next) => {
+  NProgress.start()
+  const token = store.state.user.token
+  if (token) {
+    if (to.path === '/login') {
+      next('/')
+      NProgress.done()
+    } else {
+      await store.dispatch('user/PostProfile')
+      next()
+    }
+  } else {
+    if (arr.includes(to.path)) {
+      next()
+    } else {
+      next('/login')
+      NProgress.done()
+    }
+  }
+})
 
+router.afterEach(() => {
+  NProgress.done()
+})
 //   // set page title
 //   document.title = getPageTitle(to.meta.title)
 
@@ -58,7 +82,3 @@
 //   }
 // })
 
-// router.afterEach(() => {
-//   // finish progress bar
-//   NProgress.done()
-// })

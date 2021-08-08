@@ -38,7 +38,6 @@
 
 <script>
 import { validMobile } from '@/utils/validate'
-import { LoginAPI } from '@/api'
 
 export default {
   name: 'Login',
@@ -100,28 +99,20 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.Login()
-          // this.$store
-          //   .dispatch('user/login', this.loginForm)
-          //   .then(() => {
-          //     this.$router.push({ path: this.redirect || '/' })
-          //     this.loading = false
-          //   })
-          //   .catch(() => {
-          //     this.loading = false
-          //   })
+          this.login()
+          this.loading = false
         } else {
           this.$message('请填写正确手机号或密码')
           return false
         }
       })
     },
-    // 调用登录接口
-    async Login() {
+    // 调用vuex的登录接口
+    async login() {
       try {
-        const res = await LoginAPI(this.loginForm)
-        this.$message(res.message)
-        this.$store.commit('User/setToken', res.data)
+        await this.$store.dispatch('user/Login', this.loginForm)
+        this.$message('登陆成功')
+        this.$router.push('/')
       } catch (err) {
         console.log(err)
         this.$message('登陆失败,请填写正确手机号或密码')
