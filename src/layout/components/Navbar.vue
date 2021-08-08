@@ -52,8 +52,15 @@ export default {
       this.$store.dispatch('app/toggleSideBar')
     },
     logout() {
+      this.$confirm('是否退出?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async() => {
+        await this.$store.dispatch('user/logOut')
+        this.$router.push('/login?return_url=' + encodeURIComponent(this.$route.fullPath))
+      })
       // await this.$store.dispatch('user/logout')
-      this.$store.dispatch('user/logout')
       // this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
   }

@@ -112,7 +112,7 @@ export default {
       try {
         await this.$store.dispatch('user/Login', this.loginForm)
         this.$message('登陆成功')
-        this.$router.push('/')
+        this.$router.push(this.$route.query.return_url || '/')
       } catch (err) {
         console.log(err)
         this.$message('登陆失败,请填写正确手机号或密码')

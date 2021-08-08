@@ -33,6 +33,10 @@ const user = {
       const res = await PostProfileAPI()
       const data = await GetUserAPI(res.data.userId)
       store.commit('setUserInfo', { ...res.data, ...data.data })
+    },
+    logOut(store) {
+      store.commit('removeToken')
+      store.commit('setUserInfo', {})
     }
   }
 }
