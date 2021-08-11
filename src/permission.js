@@ -22,7 +22,9 @@ router.beforeEach(async(to, from, next) => {
       next('/')
       NProgress.done()
     } else {
-      await store.dispatch('user/PostProfile')
+      if (!store.getters.userId) {
+        await store.dispatch('user/PostProfile')
+      }
       next()
     }
   } else {

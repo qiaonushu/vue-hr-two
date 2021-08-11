@@ -1,3 +1,5 @@
+
+
 #app {
 
   .main-container {
@@ -88,6 +90,15 @@
               color: #43a7fe;
             }
           }
+        }
+      }
+      .is-active {
+        background-color: $menuText !important;
+        span{
+          color: $menuActiveText !important;
+        }
+        .svg-icon{
+          color: $menuActiveText !important;
         }
       }
     }

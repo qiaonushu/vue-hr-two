@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!item.hidden">
+  <div v-if="!item.hidden" ref="item" @click="heightLight">
     <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
       <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
         <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}">
@@ -89,7 +89,13 @@ export default {
         return this.basePath
       }
       return path.resolve(this.basePath, routePath)
+    },
+    heightLight(e) {
+      const li = this.$refs.item.querySelector('li')
+
+      console.log(li)
     }
   }
 }
 </script>
+
