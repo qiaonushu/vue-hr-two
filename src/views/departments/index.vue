@@ -67,7 +67,7 @@
       :close-on-press-escape="false"
       :visible.sync="showDialog"
     >
-      <depDialog :id="pid" :set="is_company" @success="Company" />
+      <depDialog :id="pid" :set="is_company" :com-list="comList" @success="Company" />
     </el-dialog>
   </div>
 </template>
@@ -88,7 +88,8 @@ export default {
       list: [],
       showDialog: false,
       pid: '',
-      is_company: false
+      is_company: false,
+      comList: []
     }
   },
   created() {
@@ -98,6 +99,7 @@ export default {
     async GetDepartment() {
       try {
         const { data: res } = await GetDepartmentAPI()
+        this.comList = res.depts
         this.company = res.depts.shift()
         this.list = fn(res.depts)
       } catch (err) {

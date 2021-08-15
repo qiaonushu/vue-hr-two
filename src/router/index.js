@@ -40,8 +40,8 @@ import permissions from './modules/permissions'
  */
 const asyncRouter = [
   departments,
-  employees,
   settings,
+  employees,
   salarys,
   social_securitys,
   attendances,
