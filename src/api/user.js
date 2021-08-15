@@ -15,8 +15,14 @@ export function PostProfileAPI() {
   })
 }
 
-export function GetUserAPI(id) {
+export const GetUserAPI = (id) => {
   return request({
     url: '/sys/user/' + id
+  })
+}
+
+export const GetSimpleAPI = () => {
+  return request({
+    url: '/sys/user/simple'
   })
 }
