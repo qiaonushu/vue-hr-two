@@ -89,8 +89,16 @@ export default {
   methods: {
     // 点击确定的事件
     async hSubmit() {
-      this.set ? this.PutDepartment() : this.PostDepartment()
-      this.$emit('success', true)
+      this.$refs.form.validate(callback => {
+        if (callback) {
+          this.set ? this.PutDepartment() : this.PostDepartment()
+          this.$emit('success', true)
+        } else {
+          this.$message('请输入正确内容')
+        }
+      })
+      // this.set ? this.PutDepartment() : this.PostDepartment()
+      // this.$emit('success', true)
     },
     // 点击关闭的事件
     close() {

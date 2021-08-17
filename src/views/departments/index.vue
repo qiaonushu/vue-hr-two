@@ -66,8 +66,9 @@
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :visible.sync="showDialog"
+      @close="closeDialog"
     >
-      <depDialog :id="pid" :set="is_company" :com-list="comList" @success="Company" />
+      <depDialog :id="pid" ref="depDialog" :set="is_company" :com-list="comList" @success="Company" />
     </el-dialog>
   </div>
 </template>
@@ -135,6 +136,9 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    closeDialog() {
+      this.$refs.depDialog.$refs.form.resetFields()
     }
   }
 }
