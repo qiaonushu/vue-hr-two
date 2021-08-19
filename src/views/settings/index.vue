@@ -11,7 +11,7 @@
                 icon="el-icon-plus"
                 size="small"
                 type="primary"
-                @click.native=" dialogVisible=true"
+                @click.native="setRole(false)"
               >新增角色</el-button>
             </el-row>
             <!-- 表格 -->
@@ -22,7 +22,8 @@
               <el-table-column label=" 操作">
                 <template slot-scope="scope">
                   <el-button size="small" type="success">分配权限</el-button>
-                  <el-button size="small" type="primary">编辑</el-button>
+                  <el-button size="small" type="primary" @click.native="setRole(scope.row)">编辑</el-button>
+                  <!-- scope.row.id -->
                   <el-button size="small" type="danger" @click.native="DeleteSysRole(scope.row.id)">删除</el-button>
                 </template>
               </el-table-column>
@@ -31,15 +32,20 @@
             <el-row type="flex" justify="center" align="middle" style="height: 60px">
               <!-- 分页组件 -->
               <el-pagination
+                ref="pagination"
                 background
                 hide-on-single-page
+                :page-sizes="[1,2,3]"
                 :page-size.sync="params.pagesize"
-                layout="prev, pager, next"
+                :current-page.sync="params.page"
+                layout="sizes,prev, pager, next, jumper"
                 :total="total"
-                @current-change="pageChange($event,0)"
-                @prev-click="pageChange($event,1)"
-                @next-click="pageChange($event,2)"
+                @current-change="GetSysRole"
+                @prev-click="GetSysRole"
+                @next-click="GetSysRole"
+                @size-change="GetSysRole"
               />
+              <!-- current-page -->
             </el-row>
           </el-tab-pane>
         </el-tabs>
@@ -49,29 +55,30 @@
       title="提示"
       :visible.sync="dialogVisible"
       width="30%"
+      @close="clear"
     >
       <el-form ref="ruleForm" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="角色名称">
           <el-input v-model="form.name" prop="name" />
         </el-form-item>
         <el-form-item label="角色描述">
-          <el-input v-model="form.region" prop="region" />
+          <el-input v-model="form.description" prop="description" />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="addRole">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { GetSysRoleAPI, DeleteSysRoleAPI } from '@/api'
-
+import { GetSysRoleAPI, DeleteSysRoleAPI, PostSysRoleAPI, PutSysRoleAPI } from '@/api'
 export default {
   data() {
     return {
+      count: 10,
       list: [],
       total: 0,
       params: {
@@ -79,19 +86,39 @@ export default {
         page: 1
       },
       dialogVisible: false,
+      setstate: '',
       form: {
         name: '',
-        region: ''
+        description: '',
+        id: ''
       },
       rules: {
         name: [
           { required: true, message: '请输入角色名称', trigger: 'blur' }
         ],
-        region: [
+        description: [
           { required: true, message: '请输入角色描述', trigger: 'blur' }
         ]
       }
 
+    }
+  },
+  watch: {
+    total(newval, oldval) {
+      if (newval > oldval && oldval !== 0) {
+        if (newval % this.params.pagesize !== 0) {
+          this.params.page = this.$refs.pagination.internalPageCount + 1
+          this.GetSysRole()
+        } else {
+          this.params.page = this.$refs.pagination.internalPageCount
+          this.GetSysRole()
+        }
+      } else if (newval < oldval && oldval !== 0) {
+        if (newval % this.params.pagesize === 0) {
+          this.params.page = this.$refs.pagination.internalPageCount - 1
+          this.GetSysRole()
+        }
+      }
     }
   },
   created() {
@@ -110,24 +137,71 @@ export default {
     },
     // 删除角色
     async DeleteSysRole(id) {
-      try {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async() => {
         await DeleteSysRoleAPI(id)
-        this.$message('删除成功')
         this.GetSysRole()
-      } catch (err) {
-        console.error(err)
-        this.$message('删除失败')
-      }
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     },
     // 点击页码重新发送请求
-    pageChange(e, state) {
-      this.params.page = e
-      if (state === 0) {
-        this.GetSysRole()
-      } else if (state === 1) {
-        this.GetSysRole()
-      } else if (state === 2) {
-        this.GetSysRole()
+    // 添加角色
+    async PostSysRole() {
+      await PostSysRoleAPI(this.form)
+    },
+    // 编辑角色
+    async PutSysRole() {
+      await PutSysRoleAPI(this.form)
+    },
+    // async PutSysRole() {
+    //   const { data: res } = await PutSysRoleAPI()
+    //   console.log(res)
+    // },
+    // 获取角色详情
+    // async  GetRoleDetails(id) {
+    //   const { data: res } = await GetRoleDetailsAPI(id)
+    //   console.log(res)
+    //   this.form = res
+    // },
+    // 根据数值分辨是添加还是编辑
+    setRole(state) {
+      this.dialogVisible = true
+      if (state) {
+        this.setstate = true
+        this.form = state
+      } else {
+        this.setstate = false
+      }
+    },
+    // 添加与编辑的弹框
+    addRole() {
+      this.$refs.ruleForm.validate(callback => {
+        if (callback) {
+          this.setstate ? this.PutSysRole() : this.PostSysRole()
+          this.GetSysRole()
+          this.dialogVisible = false
+        } else {
+          this.$message('请输入正确信息')
+        }
+      })
+    },
+    clear() {
+      this.$refs.ruleForm.resetFields()
+      this.form = {
+        name: '',
+        description: '',
+        id: ''
       }
     }
   }

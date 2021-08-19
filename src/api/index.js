@@ -1,2 +1,4 @@
-export * from './SysUser'
-export * from './company'
+export * from './sysuser'
+export * from './department'
+export * from './employees'
+export * from './settings'

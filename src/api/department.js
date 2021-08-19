@@ -1,5 +1,12 @@
 import request from '@/utils/request'
 
+// 获取员工简单列表
+export const GetSimpleAPI = () => {
+  return request({
+    url: '/sys/user/simple'
+  })
+}
+
 // 查询企业的部门列表
 export const GetDepartmentAPI = () => {
   return request({
