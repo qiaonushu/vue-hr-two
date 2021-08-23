@@ -26,9 +26,13 @@
             </el-row>
           </el-col>
         </el-row>
-        <el-tree :data="list" default-expand-all>
+        <el-tree
+          :data="list"
+          default-expand-all
+          icon-class="null"
+        >
           <!-- :default-expand-all="true" -->
-          <template #default="{ data }">
+          <template #default="{ data,node }">
             <el-row
               type="flex"
               justify="space-between"
@@ -36,6 +40,11 @@
               style="height: 40px; width: 100%;"
             >
               <el-col :span="20">
+                <svg-icon
+                  v-if="data.children.length !== 0"
+                  :icon-class="node.expanded ? 'sub' : 'add'"
+                />
+                <svg-icon v-else icon-class="angel" />
                 <span>{{ data.name }}</span>
               </el-col>
               <el-col :span="4">
@@ -90,7 +99,8 @@ export default {
       showDialog: false,
       pid: '',
       is_company: false,
-      comList: []
+      comList: [],
+      treeState: true
     }
   },
   created() {
@@ -123,7 +133,6 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async() => {
-        console.log(id)
         await DeleteDepartmentAPI(id)
         this.GetDepartment()
         this.$message({

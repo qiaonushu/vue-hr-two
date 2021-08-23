@@ -88,7 +88,7 @@ export default {
   },
   methods: {
     // 点击确定的事件
-    async hSubmit() {
+    hSubmit() {
       this.$refs.form.validate(callback => {
         if (callback) {
           this.set ? this.PutDepartment() : this.PostDepartment()

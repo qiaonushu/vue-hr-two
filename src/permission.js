@@ -4,7 +4,7 @@ import store from './store'
 import NProgress from 'nprogress' // progress bar
 // import 'nprogress/nprogress.css' // progress bar style
 // import { getToken } from '@/utils/auth' // get token from cookie
-// import getPageTitle from '@/utils/get-page-title'
+import getPageTitle from '@/utils/get-page-title'
 
 // NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -13,6 +13,12 @@ import NProgress from 'nprogress' // progress bar
 // router.beforeEach(async(to, from, next) => {
 //   // start progress bar
 //   NProgress.start()
+// 设置页面标题
+router.beforeEach((to, from, next) => {
+  document.title = getPageTitle(to.meta.title)
+  next()
+})
+
 const arr = ['/login', '/404']
 router.beforeEach(async(to, from, next) => {
   NProgress.start()

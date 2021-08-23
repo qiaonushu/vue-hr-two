@@ -37,7 +37,7 @@ service.interceptors.response.use(
   async err => {
     if (err.response || err.response.data || err.response.data.code || err.response.data.code === 10002) {
       await store.dispatch('user/logOut')
-      router.push('/login?return_url=' + encodeURIComponent(this.$route.fullPath))
+      router.push('/login?return_url=' + encodeURIComponent(router.currentRoute.fullPath))
     }
     return Promise.reject(err)
   }

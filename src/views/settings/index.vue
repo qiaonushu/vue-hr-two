@@ -34,8 +34,7 @@
               <el-pagination
                 ref="pagination"
                 background
-                hide-on-single-page
-                :page-sizes="[1,2,3]"
+                :page-sizes="[1,2,3,total]"
                 :page-size.sync="params.pagesize"
                 :current-page.sync="params.page"
                 layout="sizes,prev, pager, next, jumper"
@@ -105,20 +104,15 @@ export default {
   },
   watch: {
     total(newval, oldval) {
-      if (newval > oldval && oldval !== 0) {
-        if (newval % this.params.pagesize !== 0) {
-          this.params.page = this.$refs.pagination.internalPageCount + 1
-          this.GetSysRole()
-        } else {
-          this.params.page = this.$refs.pagination.internalPageCount
-          this.GetSysRole()
-        }
-      } else if (newval < oldval && oldval !== 0) {
-        if (newval % this.params.pagesize === 0) {
-          this.params.page = this.$refs.pagination.internalPageCount - 1
-          this.GetSysRole()
-        }
-      }
+      newval > oldval && oldval !== 0 ? (newval % this.params.pagesize !== 0 ? this.params.page = this.$refs.pagination.internalPageCount + 1 : this.params.page = this.$refs.pagination.internalPageCount) : (newval % this.params.pagesize === 0 ? this.params.page = this.$refs.pagination.internalPageCount - 1 : this.params.page = this.$refs.pagination.internalPageCount)
+      this.GetSysRole()
+      // if (newval > oldval && oldval !== 0) {
+      //   newval % this.params.pagesize !== 0 ? this.params.page = this.$refs.pagination.internalPageCount + 1 : this.params.page = this.$refs.pagination.internalPageCount
+      //   this.GetSysRole()
+      // } else if (newval < oldval && oldval !== 0) {
+      //   newval % this.params.pagesize === 0 ? this.params.page = this.$refs.pagination.internalPageCount - 1 : this.params.page = this.$refs.pagination.internalPageCount
+      //   this.GetSysRole()
+      // }
     }
   },
   created() {

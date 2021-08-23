@@ -6,9 +6,9 @@
           <span>{{ total }}条数据</span>
         </template>
         <template #right>
-          <el-button type="warning" size="small">excel导入</el-button>
+          <el-button type="warning" size="small" @click="$router.push()">excel导入</el-button>
           <el-button type="danger" size="small">excel导出</el-button>
-          <el-button type="primary" size="small">新增员工</el-button>
+          <el-button type="primary" size="small" @click.native="dialogVisible=true">新增员工</el-button>
         </template>
       </Pagetools>
       <el-card style="margin-top: 10px;">
@@ -16,23 +16,37 @@
           <el-table-column label="序号" type="index" />
           <el-table-column label="姓名" prop="username" />
           <el-table-column label="工号" prop="workNumber" />
-          <el-table-column ref="a" label="聘用形式" prop="formOfEmployment" />
+          <el-table-column label="聘用形式">
+            <template slot-scope="scope">
+              {{ scope.row.formOfEmployment===1?'正式':'非正式' }}
+            </template>
+          </el-table-column>
           <el-table-column label="部门" prop="departmentName" />
           <el-table-column label="入职时间" prop="timeOfEntry" />
           <el-table-column label="操作" width="280">
             <template slot-scope="scope">
               <el-button type="primary" size="small">查看</el-button>
               <el-button type="success" size="small">分配角色</el-button>
-              <el-button type="danger" size="small" @click="del_empl(scope.row.id,$event)">删除</el-button>
+              <el-button
+                type="danger"
+                size="small"
+                @click="del_empl(scope.row.id, $event)"
+              >删除</el-button>
             </template>
           </el-table-column>
         </el-table>
         <!-- 分页组件 -->
-        <el-row type="flex" justify="center" align="middle" style="height: 60px">
+        <el-row
+          type="flex"
+          justify="center"
+          align="middle"
+          style="height: 60px"
+        >
           <el-pagination
+            ref="pagination"
             background
             :current-page.sync="params.page"
-            :page-sizes="[3,5,10]"
+            :page-sizes="[3, 5, 10,total]"
             :page-size.sync="params.size"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"
@@ -44,15 +58,31 @@
         </el-row>
       </el-card>
     </div>
+    <el-dialog
+      title="提示"
+      :visible="dialogVisible"
+      width="30%"
+      @close="clear"
+    >
+      <empDialog
+        ref="formData"
+        @setemp="add_emp"
+      />
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { GetSysUserAPI } from '@/api'
+import { GetSysUserAPI, DeleteSysUserAPI } from '@/api'
+import empDialog from './empDialog.vue'
 
 export default {
+  components: {
+    empDialog
+  },
   data() {
     return {
+      dialogVisible: false,
       params: {
         page: 1,
         size: 3
@@ -62,7 +92,32 @@ export default {
     }
   },
   computed: {
+    // 1. 当前最大的页码
+    maxPage() {
+      return Math.ceil(this.total / this.params.size)
+    },
+    // 2. 最后一页是不是满的？
+    isLastPageFulled() {
+      return this.total % this.params.size === 0
+    }
   },
+  // watch: {
+  //   total(newval, oldval) {
+  //     newval > oldval && oldval !== 0
+  //       ? (newval % this.params.pagesize !== 0 ? this.params.page = this.$refs.pagination.internalPageCount + 1
+  //         : this.params.page = this.$refs.pagination.internalPageCount)
+  //       : (newval % this.params.pagesize === 0 ? this.params.page = this.$refs.pagination.internalPageCount - 1
+  //         : this.params.page = this.$refs.pagination.internalPageCount)
+  //     this.GetSysUser()
+  //     // if (newval > oldval && oldval !== 0) {
+  //     //   newval % this.params.pagesize !== 0 ? this.params.page = this.$refs.pagination.internalPageCount + 1 : this.params.page = this.$refs.pagination.internalPageCount
+  //     //   this.GetSysRole()
+  //     // } else if (newval < oldval && oldval !== 0) {
+  //     //   newval % this.params.pagesize === 0 ? this.params.page = this.$refs.pagination.internalPageCount - 1 : this.params.page = this.$refs.pagination.internalPageCount
+  //     //   this.GetSysRole()
+  //     // }
+  //   }
+  // },
   created() {
     this.GetSysUser()
   },
@@ -80,22 +135,34 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
       })
+        .then(async() => {
+          await DeleteSysUserAPI(val)
+          this.GetSysUser()
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
+    add_emp() {
+      this.dialogVisible = false
+      if (this.isLastPageFulled) {
+        this.params.page = this.maxPage + 1
+      } else {
+        this.params.page = this.maxPage
+      }
+      this.GetSysUser()
+    },
+    clear() {
+      this.$refs.formData.$refs.form.resetFields()
     }
   }
 }
 </script>
-
-<style>
-
-</style>
