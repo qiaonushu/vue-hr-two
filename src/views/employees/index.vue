@@ -6,7 +6,7 @@
           <span>{{ total }}条数据</span>
         </template>
         <template #right>
-          <el-button type="warning" size="small" @click="$router.push()">excel导入</el-button>
+          <el-button type="warning" size="small" @click="$refs.UpData.$refs['excel-upload-input'].click()">excel导入</el-button>
           <el-button type="danger" size="small">excel导出</el-button>
           <el-button type="primary" size="small" @click.native="dialogVisible=true">新增员工</el-button>
         </template>
@@ -62,23 +62,30 @@
       title="提示"
       :visible="dialogVisible"
       width="30%"
-      @close="clear"
+      @close="$refs.formData.$refs.form.resetFields()"
     >
       <empDialog
         ref="formData"
         @setemp="add_emp"
       />
     </el-dialog>
+    <UpData
+      ref="UpData"
+      :on-success="on_success"
+    />
   </div>
 </template>
 
 <script>
-import { GetSysUserAPI, DeleteSysUserAPI } from '@/api'
+import { GetSysUserAPI, DeleteSysUserAPI, PostSysUserBatchAPI } from '@/api'
 import empDialog from './empDialog.vue'
+import UpData from '@/components/UploadExcel'
+import { mapImport } from '@/utils/Export'
 
 export default {
   components: {
-    empDialog
+    empDialog,
+    UpData
   },
   data() {
     return {
@@ -160,8 +167,18 @@ export default {
       }
       this.GetSysUser()
     },
-    clear() {
-      this.$refs.formData.$refs.form.resetFields()
+    async on_success({ header, results }) {
+      try {
+        await PostSysUserBatchAPI(mapImport(results))
+        if (this.isLastPageFulled) {
+          this.params.page = this.maxPage + 1
+        } else {
+          this.params.page = this.maxPage
+        }
+        this.GetSysUser()
+      } catch (err) {
+        console.error(err)
+      }
     }
   }
 }
