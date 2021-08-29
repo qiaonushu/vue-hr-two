@@ -7,8 +7,8 @@
         </template>
         <template #right>
           <el-button type="warning" size="small" @click="$refs.UpData.$refs['excel-upload-input'].click()">excel导入</el-button>
-          <el-button type="danger" size="small">excel导出</el-button>
-          <el-button type="primary" size="small" @click.native="dialogVisible=true">新增员工</el-button>
+          <el-button type="danger" size="small" @click="export_Excel">excel导出</el-button>
+          <el-button type="primary" size="small" @click="dialogVisible=true">新增员工</el-button>
         </template>
       </Pagetools>
       <el-card style="margin-top: 10px;">
@@ -22,10 +22,14 @@
             </template>
           </el-table-column>
           <el-table-column label="部门" prop="departmentName" />
-          <el-table-column label="入职时间" prop="timeOfEntry" />
+          <el-table-column label="入职时间" prop="timeOfEntry" :formatter="setstring" />
           <el-table-column label="操作" width="280">
             <template slot-scope="scope">
-              <el-button type="primary" size="small">查看</el-button>
+              <el-button
+                type="primary"
+                size="small"
+                @click="$router.push('/employees/detail?id='+scope.row.id)"
+              >查看</el-button>
               <el-button type="success" size="small">分配角色</el-button>
               <el-button
                 type="danger"
@@ -80,7 +84,7 @@
 import { GetSysUserAPI, DeleteSysUserAPI, PostSysUserBatchAPI } from '@/api'
 import empDialog from './empDialog.vue'
 import UpData from '@/components/UploadExcel'
-import { mapImport } from '@/utils/Export'
+import { mapImport, mapExcel } from '@/utils/Export'
 
 export default {
   components: {
@@ -106,6 +110,13 @@ export default {
     // 2. 最后一页是不是满的？
     isLastPageFulled() {
       return this.total % this.params.size === 0
+    },
+    list_val() {
+      const arr = []
+      this.list.forEach(item => {
+        arr.push(Object.values(item))
+      })
+      return arr
     }
   },
   // watch: {
@@ -176,9 +187,25 @@ export default {
           this.params.page = this.maxPage
         }
         this.GetSysUser()
+        this.$message('导入成功')
       } catch (err) {
         console.error(err)
+        this.$message('导入失败')
       }
+    },
+    async export_Excel() {
+      import('@/vendor/Export2Excel').then(excel => {
+        excel.export_json_to_excel({
+          header: mapExcel(), // 表头 必填
+          data: this.list_val, // 具体数据 必填
+          filename: 'excel-list', // 非必填
+          autoWidth: true, // 非必填
+          bookType: 'xlsx' // 非必填
+        })
+      })
+    },
+    setstring(row, column, cellValue) {
+      return cellValue.substring(0, 10)
     }
   }
 }

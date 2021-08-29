@@ -98,7 +98,6 @@ export default {
       this.showTree = false
     },
     async PostSysUser() {
-      console.log(this.formData)
       await PostSysUserAPI(this.formData)
     },
     addemp(state) {

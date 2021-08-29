@@ -16,13 +16,13 @@
             </el-row>
             <!-- 表格 -->
             <el-table :data="list">
-              <el-table-column label="序号" width="120" type="index" />
+              <el-table-column width="120" label="序号" type="index" :index="typeIndex" />
               <el-table-column label="角色名称" width="240" prop="name" />
               <el-table-column label="描述" prop="description" />
               <el-table-column label=" 操作">
                 <template slot-scope="scope">
                   <el-button size="small" type="success">分配权限</el-button>
-                  <el-button size="small" type="primary" @click.native="setRole(scope.row)">编辑</el-button>
+                  <el-button size="small" type="primary" @click.native="setRole(scope.row,scope)">编辑</el-button>
                   <!-- scope.row.id -->
                   <el-button size="small" type="danger" @click.native="DeleteSysRole(scope.row.id)">删除</el-button>
                 </template>
@@ -169,7 +169,8 @@ export default {
     //   this.form = res
     // },
     // 根据数值分辨是添加还是编辑
-    setRole(state) {
+    setRole(state, e) {
+      console.log(e)
       this.dialogVisible = true
       if (state) {
         this.setstate = true
@@ -197,6 +198,10 @@ export default {
         description: '',
         id: ''
       }
+    },
+    typeIndex(num) {
+      const aaa = this.params.page * this.params.pagesize + num - (this.params.pagesize - 1)
+      return this.params.page > 1 ? aaa : num + 1
     }
   }
 }

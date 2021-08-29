@@ -44,7 +44,7 @@
                   v-if="data.children.length !== 0"
                   :icon-class="node.expanded ? 'sub' : 'add'"
                 />
-                <svg-icon v-else icon-class="angel" />
+                <span v-else style="margin-right:16px;" />
                 <span>{{ data.name }}</span>
               </el-col>
               <el-col :span="4">
@@ -153,6 +153,3 @@ export default {
 }
 </script>
 
-<style>
-
-</style>

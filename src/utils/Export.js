@@ -32,15 +32,19 @@ export const mapImport = (arr) => {
 }
 
 // 导出的数据转换
-// export const mapExport = (arr) => {
-//   const transformation = {
-//     'timeOfEntry': '入职日期',
-//     'mobile': '手机号',
-//     'username': '姓名',
-//     'correctionTime': '转正日期 ',
-//     'workNumber': '工号',
-//     'departmentName': '部门',
-//     'formOfEmployment': '聘用形式'
-//   }
-// }
+export const mapExcel = () => {
+  const transformation = {
+    'id': '编号',
+    'mobile': '手机号',
+    'username': '姓名',
+    'password': '密码',
+    'timeOfEntry': '入职日期',
+    'formOfEmployment': '聘用形式',
+    'workNumber': '工号',
+    'correctionTime': '转正日期',
+    'departmentName': '部门',
+    'staffPhoto': '头像地址'
+  }
+  return Object.values(transformation)
+}
 

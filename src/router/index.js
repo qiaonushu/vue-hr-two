@@ -8,10 +8,10 @@ import Layout from '@/layout'
 import departments from './modules/departments'
 import employees from './modules/employees'
 import settings from './modules/settings'
-import salarys from './modules/salarys'
-import social_securitys from './modules/social_securitys'
-import attendances from './modules/attendances'
-import approvals from './modules/approvals'
+// import salarys from './modules/salarys'
+// import social_securitys from './modules/social_securitys'
+// import attendances from './modules/attendances'
+// import approvals from './modules/approvals'
 import permissions from './modules/permissions'
 
 /**
@@ -42,11 +42,11 @@ const asyncRouter = [
   departments,
   settings,
   employees,
-  salarys,
-  social_securitys,
-  attendances,
-  approvals,
   permissions
+  // salarys,
+  // social_securitys,
+  // attendances,
+  // approvals,
 ]
 
 const constantRoutes = [

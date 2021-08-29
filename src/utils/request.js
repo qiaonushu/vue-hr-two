@@ -35,6 +35,7 @@ service.interceptors.response.use(
     }
   },
   async err => {
+    console.dir(err)
     if (err.response || err.response.data || err.response.data.code || err.response.data.code === 10002) {
       await store.dispatch('user/logOut')
       router.push('/login?return_url=' + encodeURIComponent(router.currentRoute.fullPath))
