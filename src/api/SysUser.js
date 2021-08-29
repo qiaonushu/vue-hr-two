@@ -18,7 +18,7 @@ export function PostProfileAPI() {
 }
 
 // 获取员工列表
-export const GetUserAPI = (id) => {
+export const GetUserAPI = id => {
   return request({
     url: '/sys/user/' + id
   })

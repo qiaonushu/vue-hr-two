@@ -13,7 +13,7 @@
       </Pagetools>
       <el-card style="margin-top: 10px;">
         <el-table border :data="list">
-          <el-table-column label="序号" type="index" />
+          <el-table-column label="序号" type="index" :index="typeIndex" />
           <el-table-column label="姓名" prop="username" />
           <el-table-column label="工号" prop="workNumber" />
           <el-table-column label="聘用形式">
@@ -206,6 +206,10 @@ export default {
     },
     setstring(row, column, cellValue) {
       return cellValue.substring(0, 10)
+    },
+    typeIndex(num) {
+      const aaa = this.params.page * this.params.size + num - (this.params.size - 1)
+      return this.params.page > 1 ? aaa : num + 1
     }
   }
 }

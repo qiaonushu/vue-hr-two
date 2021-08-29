@@ -26,3 +26,11 @@ export const PostSysUserBatchAPI = data => {
   })
 }
 
+// 保存员工基本信息
+export const PutSysUserAPI = data => {
+  return request({
+    url: '/sys/user/' + data.id,
+    method: 'put',
+    data
+  })
+}

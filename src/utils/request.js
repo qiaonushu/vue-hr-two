@@ -36,11 +36,13 @@ service.interceptors.response.use(
   },
   async err => {
     console.dir(err)
-    if (err.response || err.response.data || err.response.data.code || err.response.data.code === 10002) {
+    if (err.response && err.response.data && err.response.data.code === 10002) {
       await store.dispatch('user/logOut')
+      console.log('token失效了,当前的地址是：', router.currentRoute.fullPath)
       router.push('/login?return_url=' + encodeURIComponent(router.currentRoute.fullPath))
+    } else {
+      return Promise.reject(err)
     }
-    return Promise.reject(err)
   }
 )
 
