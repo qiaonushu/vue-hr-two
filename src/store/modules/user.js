@@ -7,8 +7,7 @@ const user = {
   state() {
     return {
       token: getToken() || null,
-      userInfo: {},
-      roleTotal: 0
+      userInfo: {}
     }
   },
   mutations: {
@@ -22,9 +21,6 @@ const user = {
     },
     setUserInfo(state, val) {
       state.userInfo = val
-    },
-    setroleTotal(state, val) {
-      state.roleTotal = val
     }
   },
   actions: {
@@ -37,6 +33,7 @@ const user = {
       const res = await PostProfileAPI()
       const data = await GetUserAPI(res.data.userId)
       store.commit('setUserInfo', { ...res.data, ...data.data })
+      // store.commit('menus/setmenuList', res.data.roles.menus)
     },
     logOut(store) {
       store.commit('removeToken')

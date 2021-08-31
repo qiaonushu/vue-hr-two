@@ -6,8 +6,18 @@
           <span>{{ total }}条数据</span>
         </template>
         <template #right>
-          <el-button type="warning" size="small" @click="$refs.UpData.$refs['excel-upload-input'].click()">excel导入</el-button>
-          <el-button type="danger" size="small" @click="export_Excel">excel导出</el-button>
+          <el-button
+            v-if="$store.state.user.userInfo.roles.points.includes('import_excel')"
+            type="warning"
+            size="small"
+            @click="$refs.UpData.$refs['excel-upload-input'].click()"
+          >excel导入</el-button>
+          <el-button
+            v-if="$store.state.user.userInfo.roles.points.includes('export_excel')"
+            type="danger"
+            size="small"
+            @click="export_Excel"
+          >excel导出</el-button>
           <el-button type="primary" size="small" @click="setdialog=true">新增员工</el-button>
         </template>
       </Pagetools>
@@ -32,6 +42,7 @@
               >查看</el-button>
               <el-button type="success" size="small" @click="assignrole(scope.row.id)">分配角色</el-button>
               <el-button
+                v-if="$store.state.user.userInfo.roles.points.includes('del_employee')"
                 type="danger"
                 size="small"
                 @click="del_empl(scope.row.id, $event)"

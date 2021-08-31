@@ -8,10 +8,10 @@ import Layout from '@/layout'
 import departments from './modules/departments'
 import employees from './modules/employees'
 import settings from './modules/settings'
-// import salarys from './modules/salarys'
-// import social_securitys from './modules/social_securitys'
-// import attendances from './modules/attendances'
-// import approvals from './modules/approvals'
+import salarys from './modules/salarys'
+import social_securitys from './modules/social_securitys'
+import attendances from './modules/attendances'
+import approvals from './modules/approvals'
 import permissions from './modules/permissions'
 
 /**
@@ -42,11 +42,11 @@ export const asyncRoutes = [
   departments,
   settings,
   employees,
-  permissions
-  // salarys,
-  // social_securitys,
-  // attendances,
-  // approvals,
+  permissions,
+  salarys,
+  social_securitys,
+  attendances,
+  approvals
 ]
 
 export const constantRoutes = [
@@ -55,12 +55,6 @@ export const constantRoutes = [
     component: () => import('@/views/login/index'),
     hidden: true
   },
-  {
-    path: '/404',
-    component: () => import('@/views/404'),
-    hidden: true
-  },
-
   {
     path: '/',
     component: Layout,
@@ -74,17 +68,22 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/404',
+    component: () => import('@/views/404'),
+    hidden: true
+  }
   // { path: '/UploadExcel',
   //   component: () => import('@/views/UploadExcel')
   // },
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  // { path: '*', redirect: '/404', hidden: true }
 ]
 
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: [...constantRoutes, ...asyncRoutes]
+  routes: [...constantRoutes]
 })
 
 const router = createRouter()
