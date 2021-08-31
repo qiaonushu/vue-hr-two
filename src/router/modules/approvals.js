@@ -7,6 +7,6 @@ export default {
     path: '',
     name: 'approvals',
     component: () => import('@/views/approvals'),
-    meta: { title: '审批', icon: 'dashboard' }
+    meta: { title: '审核', icon: 'dashboard' }
   }]
 }

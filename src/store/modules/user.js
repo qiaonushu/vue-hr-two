@@ -7,7 +7,8 @@ const user = {
   state() {
     return {
       token: getToken() || null,
-      userInfo: {}
+      userInfo: {},
+      roleTotal: 0
     }
   },
   mutations: {
@@ -21,6 +22,9 @@ const user = {
     },
     setUserInfo(state, val) {
       state.userInfo = val
+    },
+    setroleTotal(state, val) {
+      state.roleTotal = val
     }
   },
   actions: {

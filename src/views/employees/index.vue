@@ -8,7 +8,7 @@
         <template #right>
           <el-button type="warning" size="small" @click="$refs.UpData.$refs['excel-upload-input'].click()">excel导入</el-button>
           <el-button type="danger" size="small" @click="export_Excel">excel导出</el-button>
-          <el-button type="primary" size="small" @click="dialogVisible=true">新增员工</el-button>
+          <el-button type="primary" size="small" @click="setdialog=true">新增员工</el-button>
         </template>
       </Pagetools>
       <el-card style="margin-top: 10px;">
@@ -30,7 +30,7 @@
                 size="small"
                 @click="$router.push('/employees/detail?id='+scope.row.id)"
               >查看</el-button>
-              <el-button type="success" size="small">分配角色</el-button>
+              <el-button type="success" size="small" @click="assignrole(scope.row.id)">分配角色</el-button>
               <el-button
                 type="danger"
                 size="small"
@@ -54,51 +54,62 @@
             :page-size.sync="params.size"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"
-            @size-change="GetSysUser()"
-            @current-change="GetSysUser()"
-            @prev-click="GetSysUser()"
-            @next-click="GetSysUser()"
+            @size-change="getSysUser()"
+            @current-change="getSysUser()"
+            @prev-click="getSysUser()"
+            @next-click="getSysUser()"
           />
         </el-row>
       </el-card>
     </div>
+    <!-- 添加与设置弹出框 -->
     <el-dialog
       title="提示"
-      :visible="dialogVisible"
+      :visible="setdialog"
       width="30%"
+      :before-close="handleClose"
       @close="$refs.formData.$refs.form.resetFields()"
     >
-      <empDialog
-        ref="formData"
-        @setemp="add_emp"
-      />
+      <setRole ref="formData" @setemp="add_emp" />
     </el-dialog>
-    <UpData
-      ref="UpData"
-      :on-success="on_success"
-    />
+    <!-- 分配角色弹出框 -->
+    <el-dialog
+      title="分配角色"
+      :visible="assigndialog"
+      width="30%"
+      :before-close="handleClose"
+    >
+      <assignRole :id="is_id" @close="dialogclose" />
+    </el-dialog>
+
+    <!-- 导入组件 -->
+    <UpData ref="UpData" :on-success="on_success" />
   </div>
 </template>
 
 <script>
 import { GetSysUserAPI, DeleteSysUserAPI, PostSysUserBatchAPI } from '@/api'
-import empDialog from './empDialog.vue'
+import setRole from './dialog/setRole.vue'
+import assignRole from './dialog/assignRole.vue'
 import UpData from '@/components/UploadExcel'
 import { mapImport, mapExcel } from '@/utils/Export'
 
 export default {
   components: {
-    empDialog,
+    setRole,
+    assignRole,
     UpData
   },
   data() {
     return {
-      dialogVisible: false,
+      setdialog: false,
+      assigndialog: false,
+      total: 0,
+      is_id: '',
       params: {
         page: 1,
         size: 3
       },
-      total: 0,
       list: []
     }
   },
@@ -126,7 +137,7 @@ export default {
   //         : this.params.page = this.$refs.pagination.internalPageCount)
   //       : (newval % this.params.pagesize === 0 ? this.params.page = this.$refs.pagination.internalPageCount - 1
   //         : this.params.page = this.$refs.pagination.internalPageCount)
-  //     this.GetSysUser()
+  //     this.getSysUser()
   //     // if (newval > oldval && oldval !== 0) {
   //     //   newval % this.params.pagesize !== 0 ? this.params.page = this.$refs.pagination.internalPageCount + 1 : this.params.page = this.$refs.pagination.internalPageCount
   //     //   this.GetSysRole()
@@ -137,14 +148,17 @@ export default {
   //   }
   // },
   created() {
-    this.GetSysUser()
+    // 获取员工列表
+    this.getSysUser()
   },
   methods: {
-    async GetSysUser() {
+    // 获取员工列表接口
+    async getSysUser() {
       const { data: res } = await GetSysUserAPI(this.params)
       this.list = res.rows
       this.total = res.total
     },
+    // 删除员工
     del_empl(val, e) {
       // 点击按钮后elementUI会自动获取焦点，使用enter与空格符会触发点击的按钮的点击事件
       // 解决，添加失去焦点事件即可
@@ -155,8 +169,9 @@ export default {
         type: 'warning'
       })
         .then(async() => {
+          // 删除员工接口
           await DeleteSysUserAPI(val)
-          this.GetSysUser()
+          this.getSysUser()
           this.$message({
             type: 'success',
             message: '删除成功!'
@@ -169,15 +184,17 @@ export default {
           })
         })
     },
+    // 新增员工
     add_emp() {
-      this.dialogVisible = false
+      this.setdialog = false
       if (this.isLastPageFulled) {
         this.params.page = this.maxPage + 1
       } else {
         this.params.page = this.maxPage
       }
-      this.GetSysUser()
+      this.getSysUser()
     },
+    // 导入成功的回调函数
     async on_success({ header, results }) {
       try {
         await PostSysUserBatchAPI(mapImport(results))
@@ -186,13 +203,14 @@ export default {
         } else {
           this.params.page = this.maxPage
         }
-        this.GetSysUser()
+        this.getSysUser()
         this.$message('导入成功')
       } catch (err) {
         console.error(err)
         this.$message('导入失败')
       }
     },
+    // 导出
     async export_Excel() {
       import('@/vendor/Export2Excel').then(excel => {
         excel.export_json_to_excel({
@@ -204,12 +222,28 @@ export default {
         })
       })
     },
+    // 时间日期的修改
     setstring(row, column, cellValue) {
       return cellValue.substring(0, 10)
     },
+    // 页面索引值计算
     typeIndex(num) {
-      const aaa = this.params.page * this.params.size + num - (this.params.size - 1)
-      return this.params.page > 1 ? aaa : num + 1
+      const index = this.params.page * this.params.size + num - (this.params.size - 1)
+      return this.params.page > 1 ? index : num + 1
+    },
+    // 关闭弹框
+    handleClose() {
+      this.assigndialog = false
+      this.setdialog = false
+    },
+    // 分配角色
+    assignrole(id) {
+      this.assigndialog = true
+      this.is_id = id
+    },
+    // 关闭弹窗
+    dialogclose() {
+      this.assigndialog = false
     }
   }
 }

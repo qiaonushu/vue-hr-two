@@ -21,7 +21,7 @@
               <el-table-column label="描述" prop="description" />
               <el-table-column label=" 操作">
                 <template slot-scope="scope">
-                  <el-button size="small" type="success">分配权限</el-button>
+                  <el-button size="small" type="success" @click="assigndialog=true">分配权限</el-button>
                   <el-button size="small" type="primary" @click.native="setRole(scope.row,scope)">编辑</el-button>
                   <!-- scope.row.id -->
                   <el-button size="small" type="danger" @click.native="DeleteSysRole(scope.row.id)">删除</el-button>
@@ -52,8 +52,9 @@
     </div>
     <el-dialog
       title="提示"
-      :visible.sync="dialogVisible"
+      :visible="setdialog"
       width="30%"
+      :before-close="handleClose"
       @close="clear"
     >
       <el-form ref="ruleForm" :model="form" :rules="rules" label-width="100px">
@@ -65,27 +66,42 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button @click="setdialog = false">取 消</el-button>
         <el-button type="primary" @click="addRole">确 定</el-button>
       </span>
+    </el-dialog>
+    <!-- 分配权限弹出框 -->
+    <el-dialog
+      title="分配权限"
+      :visible="assigndialog"
+      width="30%"
+      :before-close="handleClose"
+    >
+      <!-- @close="$refs.formData.$refs.form.resetFields()" -->
+      <assignPermission />
     </el-dialog>
   </div>
 </template>
 
 <script>
 import { GetSysRoleAPI, DeleteSysRoleAPI, PostSysRoleAPI, PutSysRoleAPI } from '@/api'
+import assignPermission from './assignPermission.vue'
+
 export default {
+  components: {
+    assignPermission
+  },
   data() {
     return {
-      count: 10,
-      list: [],
+      assigndialog: false,
+      setdialog: false,
+      setstate: '',
       total: 0,
+      list: [],
       params: {
         pagesize: 2,
         page: 1
       },
-      dialogVisible: false,
-      setstate: '',
       form: {
         name: '',
         description: '',
@@ -99,7 +115,6 @@ export default {
           { required: true, message: '请输入角色描述', trigger: 'blur' }
         ]
       }
-
     }
   },
   watch: {
@@ -158,20 +173,9 @@ export default {
     async PutSysRole() {
       await PutSysRoleAPI(this.form)
     },
-    // async PutSysRole() {
-    //   const { data: res } = await PutSysRoleAPI()
-    //   console.log(res)
-    // },
-    // 获取角色详情
-    // async  GetRoleDetails(id) {
-    //   const { data: res } = await GetRoleDetailsAPI(id)
-    //   console.log(res)
-    //   this.form = res
-    // },
     // 根据数值分辨是添加还是编辑
-    setRole(state, e) {
-      console.log(e)
-      this.dialogVisible = true
+    setRole(state) {
+      this.setdialog = true
       if (state) {
         this.setstate = true
         this.form = state
@@ -185,7 +189,7 @@ export default {
         if (callback) {
           this.setstate ? this.PutSysRole() : this.PostSysRole()
           this.GetSysRole()
-          this.dialogVisible = false
+          this.setdialog = false
         } else {
           this.$message('请输入正确信息')
         }
@@ -202,6 +206,11 @@ export default {
     typeIndex(num) {
       const aaa = this.params.page * this.params.pagesize + num - (this.params.pagesize - 1)
       return this.params.page > 1 ? aaa : num + 1
+    },
+    handleClose(done) {
+      done()
+      this.assigndialog = false
+      this.setdialog = false
     }
   }
 }

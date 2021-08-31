@@ -14,11 +14,6 @@
       <el-select v-model="formData.formOfEmployment" style="width:50%" placeholder="请选择">
         <el-option value="1" label="正式" />
         <el-option value="2" label="非正式" />
-        <!-- v-for="item in hireType"
-          :key="item.id"
-          :label="item.value"
-          :value="item.id" -->
-
       </el-select>
     </el-form-item>
     <el-form-item label="工号" prop="workNumber">
@@ -51,6 +46,8 @@ import { fn } from '@/utils/tree'
 export default {
   data() {
     return {
+      showTree: false,
+      list: [],
       formData: {
         username: '', // 用户名
         mobile: '', // 手机号
@@ -81,9 +78,7 @@ export default {
         timeOfEntry: [
           { required: true, message: '请选择入职时间', trigger: 'blur' }
         ]
-      },
-      list: [],
-      showTree: false
+      }
     }
   },
   methods: {

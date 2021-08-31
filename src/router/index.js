@@ -38,7 +38,7 @@ import permissions from './modules/permissions'
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
-const asyncRouter = [
+export const asyncRoutes = [
   departments,
   settings,
   employees,
@@ -49,7 +49,7 @@ const asyncRouter = [
   // approvals,
 ]
 
-const constantRoutes = [
+export const constantRoutes = [
   {
     path: '/login',
     component: () => import('@/views/login/index'),
@@ -84,7 +84,7 @@ const constantRoutes = [
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: [...constantRoutes, ...asyncRouter]
+  routes: [...constantRoutes, ...asyncRoutes]
 })
 
 const router = createRouter()

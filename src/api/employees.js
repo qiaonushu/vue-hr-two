@@ -34,3 +34,12 @@ export const PutSysUserAPI = data => {
     data
   })
 }
+
+// 给员工分配角色
+export const PutUserAssignRolesAPI = data => {
+  return request({
+    url: '/sys/user/assignRoles',
+    method: 'put',
+    data
+  })
+}

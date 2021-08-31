@@ -167,7 +167,7 @@ export default {
           })
         } else {
           this.$message({
-            type: 'info',
+            type: 'error',
             message: '请按要求填写'
           })
         }
