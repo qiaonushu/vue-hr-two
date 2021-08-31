@@ -40,7 +40,7 @@ export default {
   },
   data() {
     const validate_name = (rule, value, callback) => {
-      const pid = this.comList.filter(item => item.id === this.id)[0].pid
+      const pid = this.id ? this.comList.filter(item => item.id === this.id)[0].pid : ''
       const arr = this.comList.filter(item => item.id !== this.id).filter(item => item.pid === pid).some(item => item.name === value)
       const newarr = this.comList.filter(item => item.pid === this.id).some(item => item.name === value)
       this.set ? (arr ? callback(new Error('部门名称重复')) : callback()) : (newarr ? callback(new Error('部门名称重复')) : callback())
@@ -58,7 +58,6 @@ export default {
         introduce: '' // 部门介绍
       },
       list: [],
-      codeList: [],
       rules: {
         name: [
           { required: true, trigger: 'blur', message: '请输入部门名称' },
@@ -69,7 +68,7 @@ export default {
           { required: true, trigger: 'blur', message: '请输入部门编码' },
           { validator: validate_code, trigger: 'blur' }
         ],
-        manager: [{ required: true, trigger: 'blur', message: '请输入部门负责人' }],
+        manager: [{ required: true, trigger: 'change', message: '请输入部门负责人' }],
         introduce: [
           { required: true, trigger: 'blur', message: '请输入部门介绍' },
           { min: 1, max: 500, trigger: 'blur', message: '部门介绍为1~300个字符' }

@@ -110,9 +110,9 @@ export default {
     async GetDepartment() {
       try {
         const { data: res } = await GetDepartmentAPI()
-        this.comList = res.depts
         this.company = res.depts.shift()
         this.list = fn(res.depts)
+        this.comList = res.depts
       } catch (err) {
         console.error(err)
       }
