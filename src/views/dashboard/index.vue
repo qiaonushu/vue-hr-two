@@ -8,8 +8,8 @@
             <img src="@/assets/common/head.jpg">
           </div>
           <div class="headInfoTip">
-            <p class="firstChild">早安，管理员，祝你开心每一天！</p>
-            <p class="lastChild">早安，管理员，祝你开心每一天！</p>
+            <p class="firstChild">早安，{{ username }}，祝你开心每一天！</p>
+            <p class="lastChild">早安，{{ username }}，祝你开心每一天！</p>
           </div>
         </div>
         <div class="fr" />
@@ -25,6 +25,7 @@
             <span>工作日历</span>
           </div>
           <!-- 放置日历组件 -->
+          <calender />
         </el-card>
         <!-- 公告 -->
         <el-card class="box-card">
@@ -129,12 +130,16 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import calender from './calender'
 
 export default {
   name: 'Dashboard',
+  components: {
+    calender
+  },
   computed: {
     ...mapGetters([
-      'name'
+      'username'
     ])
   }
 }

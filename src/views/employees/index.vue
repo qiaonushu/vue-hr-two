@@ -7,13 +7,13 @@
         </template>
         <template #right>
           <el-button
-            v-if="$store.state.user.userInfo.roles.points.includes('import_excel')"
+            v-if="$store.state.user.userInfo.roles.points&&$store.state.user.userInfo.roles.points.includes('import_excel')"
             type="warning"
             size="small"
             @click="$refs.UpData.$refs['excel-upload-input'].click()"
           >excel导入</el-button>
           <el-button
-            v-if="$store.state.user.userInfo.roles.points.includes('export_excel')"
+            v-if="$store.state.user.userInfo.roles.points&&$store.state.user.userInfo.roles.points.includes('export_excel')"
             type="danger"
             size="small"
             @click="export_Excel"
@@ -42,7 +42,7 @@
               >查看</el-button>
               <el-button type="success" size="small" @click="assignrole(scope.row.id)">分配角色</el-button>
               <el-button
-                v-if="$store.state.user.userInfo.roles.points.includes('del_employee')"
+                v-if="$store.state.user.userInfo.roles.points&&$store.state.user.userInfo.roles.points.includes('del_employee')"
                 type="danger"
                 size="small"
                 @click="del_empl(scope.row.id, $event)"

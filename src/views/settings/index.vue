@@ -21,7 +21,7 @@
               <el-table-column label="描述" prop="description" />
               <el-table-column label=" 操作">
                 <template slot-scope="scope">
-                  <el-button size="small" type="success" @click="assigndialog=true">分配权限</el-button>
+                  <el-button size="small" type="success" @click="assignPer(scope.row.id)">分配权限</el-button>
                   <el-button size="small" type="primary" @click.native="setRole(scope.row,scope)">编辑</el-button>
                   <!-- scope.row.id -->
                   <el-button size="small" type="danger" @click.native="DeleteSysRole(scope.row.id)">删除</el-button>
@@ -77,8 +77,7 @@
       width="30%"
       :before-close="handleClose"
     >
-      <!-- @close="$refs.formData.$refs.form.resetFields()" -->
-      <assignPermission />
+      <assignPermission ref="assignPer" :isid="id" @close="dialogclose" />
     </el-dialog>
   </div>
 </template>
@@ -96,6 +95,7 @@ export default {
       assigndialog: false,
       setdialog: false,
       setstate: '',
+      id: '',
       total: 0,
       list: [],
       params: {
@@ -211,6 +211,16 @@ export default {
       done()
       this.assigndialog = false
       this.setdialog = false
+    },
+    dialogclose() {
+      this.assigndialog = false
+    },
+    assignPer(id) {
+      this.id = id
+      this.assigndialog = true
+      this.$nextTick(() => {
+        this.$refs.assignPer.getRole()
+      })
     }
   }
 }

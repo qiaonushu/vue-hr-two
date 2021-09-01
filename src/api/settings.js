@@ -34,3 +34,18 @@ export const PutSysRoleAPI = data => {
   })
 }
 
+// 给角色分配权限
+export const PutRoleAssignPremAPI = data => {
+  return request({
+    url: '/sys/role/assignPrem',
+    method: 'put',
+    data
+  })
+}
+
+// 根据ID获取角色详情
+export const GetRoleAPI = id => {
+  return request({
+    url: '/sys/role/' + id
+  })
+}

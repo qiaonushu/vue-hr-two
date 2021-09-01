@@ -1,6 +1,6 @@
 import { LoginAPI, PostProfileAPI, GetUserAPI } from '@/api'
 import { getToken, setToken, removeToken } from '@/utils/auth'
-// import { resetRouter } from '@/router'
+import { resetRouter } from '@/router'
 
 const user = {
   namespaced: true,
@@ -38,6 +38,7 @@ const user = {
     logOut(store) {
       store.commit('removeToken')
       store.commit('setUserInfo', {})
+      resetRouter()
     }
   }
 }
